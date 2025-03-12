@@ -3,6 +3,8 @@ import Head from 'next/head';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import BrowserView from '../components/BrowserView';
+import BrowserResult from '../components/BrowserResult';
 import { useTheme } from '../contexts/ThemeContext';
 
 export default function Workspace() {
@@ -13,6 +15,7 @@ export default function Workspace() {
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [browserUrl, setBrowserUrl] = useState('https://www.google.com');
+  const [browserResult, setBrowserResult] = useState(null);
   const [terminalOutput, setTerminalOutput] = useState([
     { type: 'system', content: 'Welcome to lexio.ai Terminal' },
     { type: 'system', content: 'Type commands below to interact with the system.' },
@@ -54,22 +57,62 @@ export default function Workspace() {
     }
     
     // Process browser command if in browser mode
-    if (activeTab === 'browser' && (inputText.startsWith('go to ') || inputText.startsWith('navigate to '))) {
-      const url = inputText.replace(/^(go to |navigate to )/i, '').trim();
-      if (url) {
-        let fullUrl = url;
-        if (!url.startsWith('http://') && !url.startsWith('https://')) {
-          fullUrl = 'https://' + url;
-        }
-        setBrowserUrl(fullUrl);
+    if (activeTab === 'browser') {
+      try {
+        // Import browser agent utilities
+        const { executeBrowserTask, formatBrowserResult } = await import('../utils/browserAgent');
         
-        // Add assistant response
-        setMessages((prev) => [...prev, { 
-          role: 'assistant', 
-          content: `Navigating to ${fullUrl}` 
-        }]);
+        // Execute browser task
+        const browserTaskResult = await executeBrowserTask(inputText);
+        
+        // Update browser state
+        if (browserTaskResult.success) {
+          setBrowserResult(browserTaskResult.result);
+          
+          if (browserTaskResult.result.url) {
+            setBrowserUrl(browserTaskResult.result.url);
+          }
+          
+          // Format response for chat
+          const formattedResponse = formatBrowserResult(browserTaskResult);
+          
+          // Add assistant response
+          setMessages((prev) => [...prev, { 
+            role: 'assistant', 
+            content: formattedResponse
+          }]);
+        } else {
+          // Handle error
+          setMessages((prev) => [...prev, { 
+            role: 'assistant', 
+            content: `I encountered an error while trying to use the browser: ${browserTaskResult.error || 'Unknown error'}`
+          }]);
+        }
+        
         setIsLoading(false);
         return;
+      } catch (error) {
+        console.error('Browser task error:', error);
+        
+        // Fallback to simple navigation for basic commands
+        if (inputText.startsWith('go to ') || inputText.startsWith('navigate to ')) {
+          const url = inputText.replace(/^(go to |navigate to )/i, '').trim();
+          if (url) {
+            let fullUrl = url;
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+              fullUrl = 'https://' + url;
+            }
+            setBrowserUrl(fullUrl);
+            
+            // Add assistant response
+            setMessages((prev) => [...prev, { 
+              role: 'assistant', 
+              content: `Navigating to ${fullUrl}` 
+            }]);
+            setIsLoading(false);
+            return;
+          }
+        }
       }
     }
     
@@ -328,45 +371,19 @@ export default function Workspace() {
                           </div>
                         </div>
                         
-                        <div className="flex-1 border border-gray-200 rounded-lg overflow-hidden">
-                          <div className="bg-gray-100 p-2 border-b border-gray-200 flex items-center">
-                            <div className="flex space-x-2 mr-4">
-                              <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                              <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                              <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                            </div>
-                            <input
-                              type="text"
-                              value={browserUrl}
-                              onChange={(e) => setBrowserUrl(e.target.value)}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                  let url = e.target.value;
-                                  if (!url.startsWith('http://') && !url.startsWith('https://')) {
-                                    url = 'https://' + url;
-                                    setBrowserUrl(url);
-                                  }
-                                }
-                              }}
-                              className="flex-1 bg-white border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-primary-500"
-                            />
-                          </div>
-                          <div className="h-64 bg-white p-4 overflow-y-auto">
-                            <div className="text-center text-gray-500">
-                              <p className="mb-2">Browser content would be displayed here</p>
-                              <p className="text-primary-600 font-mono text-sm break-all">{browserUrl}</p>
-                              <p className="mt-4 text-sm">
-                                Try typing commands like:
-                              </p>
-                              <ul className="text-sm mt-2 space-y-1 text-left max-w-md mx-auto">
-                                <li>• "Search for the latest AI research"</li>
-                                <li>• "Go to github.com"</li>
-                                <li>• "Find information about climate change"</li>
-                                <li>• "Check the weather in New York"</li>
-                              </ul>
-                            </div>
-                          </div>
+                        <div className="flex-1">
+                          <BrowserView 
+                            url={browserUrl} 
+                            task={inputText}
+                            result={browserResult}
+                          />
                         </div>
+                        
+                        {browserResult && (
+                          <div className="mt-4">
+                            <BrowserResult result={browserResult} />
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
