@@ -39,7 +39,7 @@ export default function Home() {
     setIsLoading(true);
 
     try {
-      // Determine if we should use the agent API or the backend API
+      // Determine which API to use based on the input
       const useAgentApi = inputText.toLowerCase().includes('search') || 
                           inputText.toLowerCase().includes('find') ||
                           inputText.toLowerCase().includes('look up') ||
@@ -53,37 +53,82 @@ export default function Home() {
                           inputText.toLowerCase().includes('weather') ||
                           inputText.toLowerCase().includes('calculate');
       
-      // In production or when using the agent API
-      if (typeof window !== 'undefined' && (window.location.hostname !== 'localhost' || useAgentApi)) {
+      // Check if the request is specifically for browser use
+      const useBrowserApi = inputText.toLowerCase().includes('browser') ||
+                           inputText.toLowerCase().includes('web') ||
+                           inputText.toLowerCase().includes('visit') ||
+                           inputText.toLowerCase().includes('open site') ||
+                           inputText.toLowerCase().includes('navigate to') ||
+                           inputText.toLowerCase().includes('go to');
+      
+      // In production or when using special APIs
+      if (typeof window !== 'undefined' && (window.location.hostname !== 'localhost' || useAgentApi || useBrowserApi)) {
         let agentResponse;
         
-        if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
-          // In production, use mock agent response
-          await new Promise(resolve => setTimeout(resolve, 1500));
-          
-          // Import the agent loop utilities for client-side execution in production
-          const { executeAgentLoop } = await import('../utils/agentLoop');
-          const result = await executeAgentLoop(inputText, messages.map(msg => ({ role: msg.role, content: msg.content })));
-          agentResponse = result.response;
-        } else {
-          // In development, use the agent API
-          const response = await fetch('/api/agent', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              query: inputText,
-              history: messages.map(msg => ({ role: msg.role, content: msg.content })),
-            }),
-          });
-          
-          if (!response.ok) {
-            throw new Error('Failed to get response from agent API');
+        if (useBrowserApi) {
+          // Use browser agent
+          try {
+            // In production, use mock browser response
+            if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+              await new Promise(resolve => setTimeout(resolve, 2000));
+              
+              // Import the browser agent utilities for client-side execution
+              const { executeBrowserTask, formatBrowserResult } = await import('../utils/browserAgent');
+              const browserResult = await executeBrowserTask(inputText);
+              agentResponse = formatBrowserResult(browserResult);
+            } else {
+              // In development, use the browser API
+              const response = await fetch('/api/browser', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  task: inputText,
+                }),
+              });
+              
+              if (!response.ok) {
+                throw new Error('Failed to get response from browser API');
+              }
+              
+              const data = await response.json();
+              agentResponse = data.response;
+            }
+          } catch (error) {
+            console.error('Browser API error:', error);
+            agentResponse = `I encountered an error while trying to use the browser: ${error.message}`;
           }
-          
-          const data = await response.json();
-          agentResponse = data.response;
+        } else if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' || useAgentApi) {
+          // Use regular agent API
+          if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+            // In production, use mock agent response
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            // Import the agent loop utilities for client-side execution in production
+            const { executeAgentLoop } = await import('../utils/agentLoop');
+            const result = await executeAgentLoop(inputText, messages.map(msg => ({ role: msg.role, content: msg.content })));
+            agentResponse = result.response;
+          } else {
+            // In development, use the agent API
+            const response = await fetch('/api/agent', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                query: inputText,
+                history: messages.map(msg => ({ role: msg.role, content: msg.content })),
+              }),
+            });
+            
+            if (!response.ok) {
+              throw new Error('Failed to get response from agent API');
+            }
+            
+            const data = await response.json();
+            agentResponse = data.response;
+          }
         }
         
         addMessage({ role: 'assistant', content: agentResponse });

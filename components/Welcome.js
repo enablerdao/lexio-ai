@@ -6,8 +6,8 @@ export default function Welcome({ onExampleClick }) {
     "What can you help me with?",
     "Search for the latest news",
     "What is quantum computing?",
-    "Find a recipe for dinner",
-    "What's the weather like today?",
+    "Use the browser to find information about AI",
+    "Go to github.com and show me the trending repositories",
     "Calculate 125 * 37"
   ];
 

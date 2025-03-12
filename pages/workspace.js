@@ -297,13 +297,75 @@ export default function Workspace() {
                       </button>
                     </div>
                     <div className="flex-1 bg-white/5 p-4 overflow-y-auto">
-                      <div className="bg-white rounded-lg p-4 h-full flex items-center justify-center text-gray-800">
-                        <div className="text-center">
-                          <p className="text-lg font-semibold mb-2">Browser Simulation</p>
-                          <p className="text-sm text-gray-600 mb-4">
-                            In a real implementation, this would display web content from:
+                      <div className="bg-white rounded-lg p-4 h-full flex flex-col text-gray-800">
+                        <div className="text-center mb-4">
+                          <p className="text-lg font-semibold mb-2">Browser Interaction</p>
+                          <p className="text-sm text-gray-600 mb-2">
+                            Enter a command to control the browser:
                           </p>
-                          <p className="text-primary-600 font-mono text-sm break-all">{browserUrl}</p>
+                          <div className="flex mb-4">
+                            <input 
+                              type="text" 
+                              value={inputText} 
+                              onChange={(e) => setInputText(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  handleSubmit(e);
+                                }
+                              }}
+                              className="flex-1 border border-gray-300 rounded-l-lg p-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                              placeholder="Example: search for quantum computing"
+                            />
+                            <button
+                              onClick={handleSubmit}
+                              disabled={!inputText.trim() || isLoading}
+                              className={`bg-primary-600 hover:bg-primary-700 text-white px-4 rounded-r-lg transition-colors ${
+                                !inputText.trim() || isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                              }`}
+                            >
+                              {isLoading ? 'Processing...' : 'Execute'}
+                            </button>
+                          </div>
+                        </div>
+                        
+                        <div className="flex-1 border border-gray-200 rounded-lg overflow-hidden">
+                          <div className="bg-gray-100 p-2 border-b border-gray-200 flex items-center">
+                            <div className="flex space-x-2 mr-4">
+                              <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                              <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                              <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                            </div>
+                            <input
+                              type="text"
+                              value={browserUrl}
+                              onChange={(e) => setBrowserUrl(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  let url = e.target.value;
+                                  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                                    url = 'https://' + url;
+                                    setBrowserUrl(url);
+                                  }
+                                }
+                              }}
+                              className="flex-1 bg-white border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-primary-500"
+                            />
+                          </div>
+                          <div className="h-64 bg-white p-4 overflow-y-auto">
+                            <div className="text-center text-gray-500">
+                              <p className="mb-2">Browser content would be displayed here</p>
+                              <p className="text-primary-600 font-mono text-sm break-all">{browserUrl}</p>
+                              <p className="mt-4 text-sm">
+                                Try typing commands like:
+                              </p>
+                              <ul className="text-sm mt-2 space-y-1 text-left max-w-md mx-auto">
+                                <li>• "Search for the latest AI research"</li>
+                                <li>• "Go to github.com"</li>
+                                <li>• "Find information about climate change"</li>
+                                <li>• "Check the weather in New York"</li>
+                              </ul>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
