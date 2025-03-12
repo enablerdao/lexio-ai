@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 
 export default function Footer() {
   return (
@@ -26,15 +27,15 @@ export default function Footer() {
               { name: 'Discord', href: '/discord' },
               { name: 'Contact', href: '/contact' }
             ].map((item) => (
-              <motion.a
-                key={item.name}
-                href={item.href}
-                className="text-white/60 hover:text-white text-sm transition-colors duration-200"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {item.name}
-              </motion.a>
+              <Link key={item.name} href={item.href} passHref>
+                <motion.a
+                  className="text-white/60 hover:text-white text-sm transition-colors duration-200"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {item.name}
+                </motion.a>
+              </Link>
             ))}
           </div>
         </div>

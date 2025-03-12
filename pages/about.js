@@ -151,12 +151,14 @@ export default function About() {
             <p className="text-lg max-w-3xl mx-auto mb-8 dark:text-white/80 text-gray-600">
               We're just getting started, and we're excited about the future of AI assistants. Whether you're a user, developer, or potential partner, we'd love to connect with you.
             </p>
-            <Link href="/contact" className="btn-primary inline-flex items-center">
-              <span>Get in Touch</span>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-              </svg>
+            <Link href="/contact" passHref>
+              <a className="btn-primary inline-flex items-center">
+                <span>Get in Touch</span>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                </svg>
+              </a>
             </Link>
           </motion.div>
         </div>

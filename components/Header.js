@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 import { useTheme } from '../contexts/ThemeContext';
 
 export default function Header({ onSidebarOpen }) {
@@ -41,15 +42,15 @@ export default function Header({ onSidebarOpen }) {
                 { name: 'About', href: '/about' },
                 { name: 'Contact', href: '/contact' }
               ].map((item) => (
-                <motion.a
-                  key={item.name}
-                  href={item.href}
-                  className="text-white/80 hover:text-white transition-colors duration-200"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  {item.name}
-                </motion.a>
+                <Link key={item.name} href={item.href} passHref>
+                  <motion.a
+                    className="text-white/80 hover:text-white transition-colors duration-200"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    {item.name}
+                  </motion.a>
+                </Link>
               ))}
             </nav>
             
@@ -117,13 +118,11 @@ export default function Header({ onSidebarOpen }) {
               { name: 'About', href: '/about' },
               { name: 'Contact', href: '/contact' }
             ].map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                className="block px-3 py-2 rounded-md text-base font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors duration-200"
-              >
-                {item.name}
-              </a>
+              <Link key={item.name} href={item.href} passHref>
+                <a className="block px-3 py-2 rounded-md text-base font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors duration-200">
+                  {item.name}
+                </a>
+              </Link>
             ))}
             <button
               onClick={toggleTheme}
