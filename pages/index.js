@@ -39,6 +39,22 @@ export default function Home() {
     setIsLoading(true);
 
     try {
+      // In production, we'll use a mock response since we don't have a deployed backend
+      if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Mock response for demo purposes
+        const mockResponse = {
+          response: `This is a demo response to your message: "${inputText}"\n\nIn a production environment, this would connect to a real backend API. For now, I'm just echoing your message with some additional text.\n\n\`\`\`javascript\n// Here's a code example\nconst greeting = "Hello, world!";\nconsole.log(greeting);\n\`\`\``,
+        };
+        
+        addMessage({ role: 'assistant', content: mockResponse.response });
+        setIsLoading(false);
+        return;
+      }
+      
+      // In development, use the real API
       const response = await fetch('/backend-api/query', {
         method: 'POST',
         headers: {
