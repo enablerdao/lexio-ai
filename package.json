@@ -1,0 +1,24 @@
+{
+  "name": "lexio-ai",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev -p 56539",
+    "build": "next build",
+    "start": "next start -p 56539",
+    "start-api": "python main.py",
+    "start-all": "concurrently \"npm run start-api\" \"npm run dev\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "lexio.ai - Advanced AI Assistant System",
+  "dependencies": {
+    "next": "^15.2.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
