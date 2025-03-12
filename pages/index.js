@@ -7,10 +7,19 @@ import Message from '../components/Message';
 import ChatInput from '../components/ChatInput';
 import Welcome from '../components/Welcome';
 import LoadingIndicator from '../components/LoadingIndicator';
+import Sidebar from '../components/Sidebar';
+import { useChat } from '../contexts/ChatContext';
+import { useTheme } from '../contexts/ThemeContext';
 
 export default function Home() {
-  const [messages, setMessages] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const { 
+    messages, 
+    isLoading, 
+    setIsLoading, 
+    addMessage 
+  } = useChat();
+  const { isDarkMode } = useTheme();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const messagesEndRef = useRef(null);
   const chatContainerRef = useRef(null);
 
@@ -26,7 +35,7 @@ export default function Home() {
     if (!inputText.trim()) return;
 
     const userMessage = { role: 'user', content: inputText };
-    setMessages((prev) => [...prev, userMessage]);
+    addMessage(userMessage);
     setIsLoading(true);
 
     try {
@@ -46,13 +55,13 @@ export default function Home() {
       }
 
       const data = await response.json();
-      setMessages((prev) => [...prev, { role: 'assistant', content: data.response }]);
+      addMessage({ role: 'assistant', content: data.response });
     } catch (error) {
       console.error('Error:', error);
-      setMessages((prev) => [
-        ...prev,
-        { role: 'assistant', content: 'Sorry, there was an error processing your request. Please try again later.' },
-      ]);
+      addMessage({ 
+        role: 'assistant', 
+        content: 'Sorry, there was an error processing your request. Please try again later.' 
+      });
     } finally {
       setIsLoading(false);
     }
@@ -63,14 +72,19 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-900 to-black text-white">
+    <div className={`min-h-screen flex flex-col ${
+      isDarkMode 
+        ? 'bg-gradient-to-b from-gray-900 to-black text-white' 
+        : 'bg-gradient-to-b from-blue-50 to-white text-gray-900'
+    }`}>
       <Head>
         <title>lexio.ai - Advanced AI Assistant</title>
         <meta name="description" content="lexio.ai - Your advanced AI assistant powered by GPT-4o" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Header />
+      <Header onSidebarOpen={() => setIsSidebarOpen(true)} />
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
       <main className="flex-1 flex flex-col pt-20 pb-24">
         <div className="max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">

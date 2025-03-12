@@ -10,12 +10,10 @@
   --background-end-rgb: 255, 255, 255;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 10, 10, 20;
-    --background-end-rgb: 20, 20, 40;
-  }
+.dark {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 10, 10, 20;
+  --background-end-rgb: 20, 20, 40;
 }
 
 body {
@@ -31,23 +29,34 @@ body {
 
 @layer components {
   .glass-panel {
-    @apply bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-xl;
+    @apply dark:bg-white/10 dark:backdrop-blur-lg dark:border-white/20 
+           light:bg-white/80 light:backdrop-blur-lg light:border-black/10 
+           rounded-2xl shadow-xl;
   }
   
   .btn-primary {
-    @apply px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-all duration-200 font-medium shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+    @apply px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg 
+           transition-all duration-200 font-medium shadow-md hover:shadow-lg 
+           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
   }
   
   .btn-secondary {
-    @apply px-4 py-2 bg-secondary-600 hover:bg-secondary-700 text-white rounded-lg transition-all duration-200 font-medium shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:ring-offset-2;
+    @apply px-4 py-2 bg-secondary-600 hover:bg-secondary-700 text-white rounded-lg 
+           transition-all duration-200 font-medium shadow-md hover:shadow-lg 
+           focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:ring-offset-2;
   }
   
   .input-primary {
-    @apply w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200;
+    @apply w-full px-4 py-2 
+           dark:bg-white/10 dark:border-white/20 dark:text-white
+           light:bg-white/80 light:border-gray-300 light:text-gray-900
+           rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 
+           focus:border-transparent transition-all duration-200;
   }
   
   .gradient-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-500 to-secondary-500 animate-gradient bg-[length:200%_auto];
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-500 to-secondary-500 
+           animate-gradient bg-[length:200%_auto];
   }
   
   .message-user {
@@ -55,7 +64,9 @@ body {
   }
   
   .message-assistant {
-    @apply bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl rounded-tl-sm px-4 py-3 shadow-md;
+    @apply dark:bg-white/10 dark:backdrop-blur-sm dark:border-white/20 dark:text-white
+           light:bg-gray-100 light:border-gray-200 light:text-gray-900
+           rounded-2xl rounded-tl-sm px-4 py-3 shadow-md;
   }
   
   .typing-indicator {
@@ -63,7 +74,7 @@ body {
   }
   
   .typing-indicator-dot {
-    @apply w-2 h-2 bg-white/60 rounded-full animate-pulse;
+    @apply w-2 h-2 dark:bg-white/60 light:bg-gray-600/60 rounded-full animate-pulse;
   }
   
   .typing-indicator-dot:nth-child(2) {
@@ -72,5 +83,41 @@ body {
   
   .typing-indicator-dot:nth-child(3) {
     animation-delay: 0.4s;
+  }
+  
+  /* Code block styling */
+  pre {
+    @apply dark:bg-gray-900 light:bg-gray-800 rounded-md overflow-x-auto;
+  }
+  
+  code {
+    @apply font-mono text-sm;
+  }
+  
+  /* Markdown styling */
+  .prose {
+    @apply dark:prose-invert light:prose-gray max-w-none;
+  }
+  
+  .prose a {
+    @apply dark:text-primary-300 light:text-primary-600 no-underline hover:underline;
+  }
+  
+  .prose h1, .prose h2, .prose h3, .prose h4 {
+    @apply dark:text-white light:text-gray-900;
+  }
+  
+  .prose strong {
+    @apply dark:text-white light:text-gray-900 font-semibold;
+  }
+  
+  .prose ul, .prose ol {
+    @apply dark:text-gray-300 light:text-gray-700;
+  }
+  
+  .prose blockquote {
+    @apply dark:border-gray-700 dark:bg-gray-800/50 
+           light:border-gray-300 light:bg-gray-100/50
+           px-4 py-2 rounded-md;
   }
 }
