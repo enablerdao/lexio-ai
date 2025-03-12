@@ -69,25 +69,52 @@ class ToolExecutor:
         except Exception as e:
             return {"error": f"Failed to execute command: {str(e)}"}
     
-    def browse_web(self, url: str) -> Dict[str, Any]:
+    def browse_web(self, url: str = None, query: str = None) -> Dict[str, Any]:
         """
-        Fetch content from a URL.
+        Fetch content from a URL or perform a web search.
         
         Args:
-            url: The URL to fetch
+            url: The URL to fetch (optional)
+            query: The search query (optional)
             
         Returns:
             A dictionary containing the response content and status
         """
         try:
-            response = requests.get(url)
-            return {
-                "content": response.text,
-                "status_code": response.status_code,
-                "headers": dict(response.headers)
-            }
+            if query and not url:
+                # If only query is provided, perform a search
+                search_url = f"https://www.google.com/search?q={requests.utils.quote(query)}"
+                response = requests.get(
+                    search_url,
+                    headers={
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+                    }
+                )
+                return {
+                    "content": response.text,
+                    "status_code": response.status_code,
+                    "headers": dict(response.headers),
+                    "search_query": query,
+                    "search_url": search_url
+                }
+            elif url:
+                # If URL is provided, fetch the content
+                response = requests.get(
+                    url,
+                    headers={
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+                    }
+                )
+                return {
+                    "content": response.text,
+                    "status_code": response.status_code,
+                    "headers": dict(response.headers),
+                    "url": url
+                }
+            else:
+                return {"error": "Either url or query parameter must be provided"}
         except Exception as e:
-            return {"error": f"Failed to fetch URL: {str(e)}"}
+            return {"error": f"Failed to fetch URL or perform search: {str(e)}"}
     
     def read_file(self, path: str) -> Dict[str, Any]:
         """

@@ -78,7 +78,9 @@ async def query_agent(request: QueryRequest):
         You have access to various tools that can help you complete tasks:
         
         1. execute_bash: Execute bash commands on the system
-        2. browse_web: Fetch content from a URL
+        2. browse_web: Fetch content from a URL or perform web searches
+           - For web searches, use: browse_web(query="your search query")
+           - For fetching specific URLs, use: browse_web(url="https://example.com")
         3. read_file: Read content from a file
         4. write_file: Write content to a file
         5. search_replace: Search and replace text in a file
@@ -86,6 +88,11 @@ async def query_agent(request: QueryRequest):
         
         When a user asks you to perform a task that requires one of these tools, 
         analyze what needs to be done and use the appropriate tool.
+        
+        For web searches or information gathering, always use the browse_web tool with the query parameter.
+        For example, if a user asks "Tell me about Tokyo", you should use browse_web(query="Tokyo facts and information").
+        
+        Always respond in a helpful, informative manner. If you encounter any errors or limitations, explain them clearly to the user.
         """
         
         messages = [{"role": "system", "content": system_message}]
