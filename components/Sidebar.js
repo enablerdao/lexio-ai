@@ -16,6 +16,14 @@ export default function Sidebar({ isOpen, onClose }) {
   const { isDarkMode, toggleTheme } = useTheme();
   const [editingId, setEditingId] = useState(null);
   const [newTitle, setNewTitle] = useState('');
+  
+  // Handle conversation switching and close sidebar on mobile
+  const handleConversationClick = (id) => {
+    switchConversation(id);
+    if (window.innerWidth < 768) {
+      onClose();
+    }
+  };
 
   const handleRename = (id, currentTitle) => {
     setEditingId(id);
@@ -130,7 +138,7 @@ export default function Sidebar({ isOpen, onClose }) {
                         </div>
                       ) : (
                         <button
-                          onClick={() => switchConversation(conversation.id)}
+                          onClick={() => handleConversationClick(conversation.id)}
                           className="w-full text-left p-2 text-white/90 flex flex-col"
                         >
                           <span className="font-medium truncate">{conversation.title}</span>

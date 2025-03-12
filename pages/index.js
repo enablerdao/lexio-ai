@@ -39,7 +39,7 @@ export default function Home() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/query', {
+      const response = await fetch('/backend-api/query', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -86,7 +86,7 @@ export default function Home() {
       <Header onSidebarOpen={() => setIsSidebarOpen(true)} />
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
-      <main className="flex-1 flex flex-col pt-20 pb-24">
+      <main className="flex-1 flex flex-col pt-20 pb-32">
         <div className="max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
           <div 
             ref={chatContainerRef}
@@ -109,11 +109,13 @@ export default function Home() {
         </div>
       </main>
 
-      <div className="fixed bottom-0 left-0 right-0">
+      <div className="fixed bottom-0 left-0 right-0 z-30">
         <ChatInput onSubmit={handleSubmit} isLoading={isLoading} />
       </div>
 
-      <Footer />
+      <div className="mt-auto">
+        <Footer />
+      </div>
     </div>
   );
 }
