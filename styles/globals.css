@@ -29,8 +29,8 @@ body {
 
 @layer components {
   .glass-panel {
-    @apply dark:bg-white/10 dark:backdrop-blur-lg dark:border-white/20 
-           light:bg-white/80 light:backdrop-blur-lg light:border-black/10 
+    @apply bg-white/80 backdrop-blur-lg border-black/10 
+           dark:bg-white/10 dark:backdrop-blur-lg dark:border-white/20 
            rounded-2xl shadow-xl;
   }
   
@@ -48,8 +48,8 @@ body {
   
   .input-primary {
     @apply w-full px-4 py-2 
+           bg-white/80 border-gray-300 text-gray-900
            dark:bg-white/10 dark:border-white/20 dark:text-white
-           light:bg-white/80 light:border-gray-300 light:text-gray-900
            rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 
            focus:border-transparent transition-all duration-200;
   }
@@ -64,8 +64,8 @@ body {
   }
   
   .message-assistant {
-    @apply dark:bg-white/10 dark:backdrop-blur-sm dark:border-white/20 dark:text-white
-           light:bg-gray-100 light:border-gray-200 light:text-gray-900
+    @apply bg-gray-100 border-gray-200 text-gray-900
+           dark:bg-white/10 dark:backdrop-blur-sm dark:border-white/20 dark:text-white
            rounded-2xl rounded-tl-sm px-4 py-3 shadow-md;
   }
   
@@ -74,7 +74,7 @@ body {
   }
   
   .typing-indicator-dot {
-    @apply w-2 h-2 dark:bg-white/60 light:bg-gray-600/60 rounded-full animate-pulse;
+    @apply w-2 h-2 bg-gray-600/60 dark:bg-white/60 rounded-full animate-pulse;
   }
   
   .typing-indicator-dot:nth-child(2) {
@@ -87,7 +87,7 @@ body {
   
   /* Code block styling */
   pre {
-    @apply dark:bg-gray-900 light:bg-gray-800 rounded-md overflow-x-auto;
+    @apply bg-gray-800 dark:bg-gray-900 rounded-md overflow-x-auto;
   }
   
   code {
@@ -96,28 +96,28 @@ body {
   
   /* Markdown styling */
   .prose {
-    @apply dark:prose-invert light:prose-gray max-w-none;
+    @apply prose-gray dark:prose-invert max-w-none;
   }
   
   .prose a {
-    @apply dark:text-primary-300 light:text-primary-600 no-underline hover:underline;
+    @apply text-primary-600 dark:text-primary-300 no-underline hover:underline;
   }
   
   .prose h1, .prose h2, .prose h3, .prose h4 {
-    @apply dark:text-white light:text-gray-900;
+    @apply text-gray-900 dark:text-white;
   }
   
   .prose strong {
-    @apply dark:text-white light:text-gray-900 font-semibold;
+    @apply text-gray-900 dark:text-white font-semibold;
   }
   
   .prose ul, .prose ol {
-    @apply dark:text-gray-300 light:text-gray-700;
+    @apply text-gray-700 dark:text-gray-300;
   }
   
   .prose blockquote {
-    @apply dark:border-gray-700 dark:bg-gray-800/50 
-           light:border-gray-300 light:bg-gray-100/50
+    @apply border-gray-300 bg-gray-100/50
+           dark:border-gray-700 dark:bg-gray-800/50 
            px-4 py-2 rounded-md;
   }
 }
