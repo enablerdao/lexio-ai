@@ -1,11 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
+import { motion, AnimatePresence } from 'framer-motion';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import Message from '../components/Message';
+import ChatInput from '../components/ChatInput';
+import Welcome from '../components/Welcome';
+import LoadingIndicator from '../components/LoadingIndicator';
 
 export default function Home() {
-  const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
+  const chatContainerRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -15,13 +22,11 @@ export default function Home() {
     scrollToBottom();
   }, [messages]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!input.trim()) return;
+  const handleSubmit = async (inputText) => {
+    if (!inputText.trim()) return;
 
-    const userMessage = { role: 'user', content: input };
+    const userMessage = { role: 'user', content: inputText };
     setMessages((prev) => [...prev, userMessage]);
-    setInput('');
     setIsLoading(true);
 
     try {
@@ -31,7 +36,7 @@ export default function Home() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          prompt: input,
+          prompt: inputText,
           history: messages.map(msg => ({ role: msg.role, content: msg.content })),
         }),
       });
@@ -46,262 +51,55 @@ export default function Home() {
       console.error('Error:', error);
       setMessages((prev) => [
         ...prev,
-        { role: 'assistant', content: 'Sorry, there was an error processing your request.' },
+        { role: 'assistant', content: 'Sorry, there was an error processing your request. Please try again later.' },
       ]);
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleExampleClick = (example) => {
+    handleSubmit(example);
+  };
+
   return (
-    <div className="container">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-900 to-black text-white">
       <Head>
-        <title>lexio.ai - AI Assistant</title>
-        <meta name="description" content="lexio.ai - Advanced AI Assistant" />
+        <title>lexio.ai - Advanced AI Assistant</title>
+        <meta name="description" content="lexio.ai - Your advanced AI assistant powered by GPT-4o" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="main">
-        <h1 className="title">lexio.ai</h1>
-        <p className="description">Your advanced AI assistant</p>
+      <Header />
 
-        <div className="chat-container">
-          <div className="messages">
+      <main className="flex-1 flex flex-col pt-20 pb-24">
+        <div className="max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col">
+          <div 
+            ref={chatContainerRef}
+            className="flex-1 overflow-y-auto py-6 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent"
+          >
             {messages.length === 0 ? (
-              <div className="welcome-message">
-                <p>👋 Hello! I'm lexio, your AI assistant. How can I help you today?</p>
-              </div>
+              <Welcome onExampleClick={handleExampleClick} />
             ) : (
-              messages.map((msg, index) => (
-                <div key={index} className={`message ${msg.role}`}>
-                  <div className="message-content">{msg.content}</div>
-                </div>
-              ))
-            )}
-            {isLoading && (
-              <div className="message assistant">
-                <div className="message-content loading">
-                  <div className="dot-typing"></div>
-                </div>
+              <div className="space-y-6 px-2">
+                <AnimatePresence>
+                  {messages.map((message, index) => (
+                    <Message key={index} message={message} index={index} />
+                  ))}
+                  {isLoading && <LoadingIndicator />}
+                </AnimatePresence>
+                <div ref={messagesEndRef} />
               </div>
             )}
-            <div ref={messagesEndRef} />
           </div>
-
-          <form onSubmit={handleSubmit} className="input-form">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Type your message here..."
-              disabled={isLoading}
-            />
-            <button type="submit" disabled={isLoading || !input.trim()}>
-              Send
-            </button>
-          </form>
         </div>
       </main>
 
-      <footer className="footer">
-        <p>© 2024 lexio.ai - All rights reserved</p>
-      </footer>
+      <div className="fixed bottom-0 left-0 right-0">
+        <ChatInput onSubmit={handleSubmit} isLoading={isLoading} />
+      </div>
 
-      <style jsx>{`
-        .container {
-          min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 1rem;
-        }
-
-        .main {
-          padding: 2rem 0;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
-
-        .title {
-          margin: 0;
-          line-height: 1.15;
-          font-size: 3rem;
-          color: #0070f3;
-        }
-
-        .description {
-          text-align: center;
-          line-height: 1.5;
-          font-size: 1.5rem;
-          margin: 1rem 0;
-        }
-
-        .chat-container {
-          width: 100%;
-          max-width: 800px;
-          height: 70vh;
-          display: flex;
-          flex-direction: column;
-          border: 1px solid #eaeaea;
-          border-radius: 10px;
-          overflow: hidden;
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .messages {
-          flex: 1;
-          overflow-y: auto;
-          padding: 1rem;
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        .welcome-message {
-          text-align: center;
-          color: #666;
-          margin: auto 0;
-        }
-
-        .message {
-          max-width: 80%;
-          padding: 0.75rem 1rem;
-          border-radius: 1rem;
-          word-break: break-word;
-        }
-
-        .user {
-          align-self: flex-end;
-          background-color: #0070f3;
-          color: white;
-          border-bottom-right-radius: 0.25rem;
-        }
-
-        .assistant {
-          align-self: flex-start;
-          background-color: #f0f0f0;
-          color: #333;
-          border-bottom-left-radius: 0.25rem;
-        }
-
-        .loading {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          min-height: 24px;
-        }
-
-        .dot-typing {
-          position: relative;
-          width: 6px;
-          height: 6px;
-          border-radius: 5px;
-          background-color: #666;
-          color: #666;
-          animation: dot-typing 1.5s infinite linear;
-        }
-
-        .dot-typing::before,
-        .dot-typing::after {
-          content: '';
-          position: absolute;
-          top: 0;
-          width: 6px;
-          height: 6px;
-          border-radius: 5px;
-          background-color: #666;
-          color: #666;
-        }
-
-        .dot-typing::before {
-          left: -12px;
-          animation: dot-typing 1.5s infinite linear;
-          animation-delay: 0s;
-        }
-
-        .dot-typing::after {
-          left: 12px;
-          animation: dot-typing 1.5s infinite linear;
-          animation-delay: 0.75s;
-        }
-
-        @keyframes dot-typing {
-          0% {
-            transform: scale(1);
-            opacity: 1;
-          }
-          50% {
-            transform: scale(1.5);
-            opacity: 0.5;
-          }
-          100% {
-            transform: scale(1);
-            opacity: 1;
-          }
-        }
-
-        .input-form {
-          display: flex;
-          padding: 1rem;
-          border-top: 1px solid #eaeaea;
-        }
-
-        .input-form input {
-          flex: 1;
-          padding: 0.75rem 1rem;
-          border: 1px solid #eaeaea;
-          border-radius: 0.5rem;
-          margin-right: 0.5rem;
-          font-size: 1rem;
-        }
-
-        .input-form button {
-          padding: 0.75rem 1.5rem;
-          background-color: #0070f3;
-          color: white;
-          border: none;
-          border-radius: 0.5rem;
-          cursor: pointer;
-          font-size: 1rem;
-          transition: background-color 0.3s;
-        }
-
-        .input-form button:hover {
-          background-color: #0051a8;
-        }
-
-        .input-form button:disabled {
-          background-color: #ccc;
-          cursor: not-allowed;
-        }
-
-        .footer {
-          width: 100%;
-          height: 60px;
-          border-top: 1px solid #eaeaea;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-      `}</style>
-
-      <style jsx global>{`
-        html,
-        body {
-          padding: 0;
-          margin: 0;
-          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-            Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-        }
-
-        * {
-          box-sizing: border-box;
-        }
-      `}</style>
+      <Footer />
     </div>
   );
 }
