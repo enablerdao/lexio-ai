@@ -20,15 +20,20 @@ export default function Footer() {
           </div>
           
           <div className="flex space-x-6">
-            {['Twitter', 'GitHub', 'Discord', 'Contact'].map((item) => (
+            {[
+              { name: 'Twitter', href: '/twitter' },
+              { name: 'GitHub', href: '/github' },
+              { name: 'Discord', href: '/discord' },
+              { name: 'Contact', href: '/contact' }
+            ].map((item) => (
               <motion.a
-                key={item}
-                href="#"
+                key={item.name}
+                href={item.href}
                 className="text-white/60 hover:text-white text-sm transition-colors duration-200"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                {item}
+                {item.name}
               </motion.a>
             ))}
           </div>

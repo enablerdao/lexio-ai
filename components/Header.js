@@ -36,15 +36,19 @@ export default function Header({ onSidebarOpen }) {
           
           <div className="flex items-center space-x-4">
             <nav className="hidden md:flex space-x-6">
-              {['Features', 'About', 'Contact'].map((item) => (
+              {[
+                { name: 'Features', href: '/features' },
+                { name: 'About', href: '/about' },
+                { name: 'Contact', href: '/contact' }
+              ].map((item) => (
                 <motion.a
-                  key={item}
-                  href="#"
+                  key={item.name}
+                  href={item.href}
                   className="text-white/80 hover:text-white transition-colors duration-200"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  {item}
+                  {item.name}
                 </motion.a>
               ))}
             </nav>
@@ -108,13 +112,17 @@ export default function Header({ onSidebarOpen }) {
           className="md:hidden bg-black/30 backdrop-blur-lg"
         >
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            {['Features', 'About', 'Contact'].map((item) => (
+            {[
+              { name: 'Features', href: '/features' },
+              { name: 'About', href: '/about' },
+              { name: 'Contact', href: '/contact' }
+            ].map((item) => (
               <a
-                key={item}
-                href="#"
+                key={item.name}
+                href={item.href}
                 className="block px-3 py-2 rounded-md text-base font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors duration-200"
               >
-                {item}
+                {item.name}
               </a>
             ))}
             <button

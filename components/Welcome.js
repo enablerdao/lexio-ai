@@ -83,7 +83,7 @@ export default function Welcome({ onExampleClick }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.7, duration: 0.5 }}
-        className="mt-12 text-white/50 text-sm"
+        className="mt-8 text-white/50 text-sm"
       >
         <p>Type a message below to get started</p>
         <div className="mt-2 animate-bounce-slow">
@@ -91,6 +91,23 @@ export default function Welcome({ onExampleClick }) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
           </svg>
         </div>
+      </motion.div>
+      
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.8, duration: 0.5 }}
+        className="mt-8"
+      >
+        <a 
+          href="/workspace" 
+          className="px-6 py-3 bg-secondary-600 hover:bg-secondary-700 text-white rounded-lg transition-all duration-200 font-medium shadow-md hover:shadow-lg inline-flex items-center"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+          Try Advanced Workspace
+        </a>
       </motion.div>
     </motion.div>
   );
