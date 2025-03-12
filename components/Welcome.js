@@ -3,9 +3,11 @@ import { motion } from 'framer-motion';
 export default function Welcome({ onExampleClick }) {
   const examples = [
     "What can you help me with?",
-    "Tell me about the latest AI developments",
-    "How do I create a React component?",
-    "Search for news about climate change"
+    "Search for the latest news",
+    "What is quantum computing?",
+    "Find a recipe for dinner",
+    "What's the weather like today?",
+    "Calculate 125 * 37"
   ];
 
   return (
@@ -37,10 +39,26 @@ export default function Welcome({ onExampleClick }) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4, duration: 0.5 }}
-        className="text-xl text-white/80 max-w-2xl mb-8"
+        className="text-xl text-white/80 max-w-2xl mb-4"
       >
-        Your advanced AI assistant powered by GPT-4o. Ask me anything or try one of the examples below.
+        Your advanced AI assistant with web search capabilities. Ask me anything or try one of the examples below.
       </motion.p>
+      
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.45, duration: 0.5 }}
+        className="text-white/70 max-w-2xl mb-8 text-center"
+      >
+        <p className="text-sm mb-2">I can help with:</p>
+        <div className="flex flex-wrap justify-center gap-2">
+          {['Web Search', 'Information Retrieval', 'Calculations', 'Code Examples', 'Current Time'].map((feature, i) => (
+            <span key={i} className="px-2 py-1 bg-white/10 rounded-full text-xs">
+              {feature}
+            </span>
+          ))}
+        </div>
+      </motion.div>
       
       <motion.div
         initial={{ opacity: 0, y: 20 }}

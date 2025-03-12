@@ -39,22 +39,59 @@ export default function Home() {
     setIsLoading(true);
 
     try {
-      // In production, we'll use a mock response since we don't have a deployed backend
-      if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
+      // Determine if we should use the agent API or the backend API
+      const useAgentApi = inputText.toLowerCase().includes('search') || 
+                          inputText.toLowerCase().includes('find') ||
+                          inputText.toLowerCase().includes('look up') ||
+                          inputText.toLowerCase().includes('what is') ||
+                          inputText.toLowerCase().includes('who is') ||
+                          inputText.toLowerCase().includes('how to') ||
+                          inputText.toLowerCase().includes('when') ||
+                          inputText.toLowerCase().includes('where') ||
+                          inputText.toLowerCase().includes('why') ||
+                          inputText.toLowerCase().includes('news') ||
+                          inputText.toLowerCase().includes('weather') ||
+                          inputText.toLowerCase().includes('calculate');
+      
+      // In production or when using the agent API
+      if (typeof window !== 'undefined' && (window.location.hostname !== 'localhost' || useAgentApi)) {
+        let agentResponse;
         
-        // Mock response for demo purposes
-        const mockResponse = {
-          response: `This is a demo response to your message: "${inputText}"\n\nIn a production environment, this would connect to a real backend API. For now, I'm just echoing your message with some additional text.\n\n\`\`\`javascript\n// Here's a code example\nconst greeting = "Hello, world!";\nconsole.log(greeting);\n\`\`\``,
-        };
+        if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+          // In production, use mock agent response
+          await new Promise(resolve => setTimeout(resolve, 1500));
+          
+          // Import the agent loop utilities for client-side execution in production
+          const { executeAgentLoop } = await import('../utils/agentLoop');
+          const result = await executeAgentLoop(inputText, messages.map(msg => ({ role: msg.role, content: msg.content })));
+          agentResponse = result.response;
+        } else {
+          // In development, use the agent API
+          const response = await fetch('/api/agent', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              query: inputText,
+              history: messages.map(msg => ({ role: msg.role, content: msg.content })),
+            }),
+          });
+          
+          if (!response.ok) {
+            throw new Error('Failed to get response from agent API');
+          }
+          
+          const data = await response.json();
+          agentResponse = data.response;
+        }
         
-        addMessage({ role: 'assistant', content: mockResponse.response });
+        addMessage({ role: 'assistant', content: agentResponse });
         setIsLoading(false);
         return;
       }
       
-      // In development, use the real API
+      // For non-agent queries in development, use the regular backend API
       const response = await fetch('/backend-api/query', {
         method: 'POST',
         headers: {
